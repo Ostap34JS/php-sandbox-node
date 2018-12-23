@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PHP sandbox</title>
+    <link rel="stylesheet" href="https://unpkg.com/mustard-ui@latest/dist/css/mustard-ui.min.css">
+</head>
+<body>
+<div class="">
+    <h1>PHP sandbox</h1>
+    <div class="row">
+        <div class="col col-lg-6">
+            <div class="form-control">
+                <textarea name="code" cols="30" rows="10" placeholder="Write you PHP code here"></textarea>
+                <div class="form-control">
+                    <button name="submit" class="button-primary button-large">RUN!</button>
+                </div>
+            </div>
+        </div>
+        <div class="col col-lg-6">
+            <div class="form-control">
+                    <textarea disabled name="output" cols="30" rows="10"
+                              placeholder="Output of you code here"></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"
+        integrity="sha256-vrn14y7WH7zgEElyQqm2uCGSQrX/xjYDjniRUQx3NyU=" crossorigin="anonymous"></script>
+<script>
+    $('button[name=submit]').on('click', function () {
+        $(this).attr('disabled', true).text('Loading...');
+        $.ajax({
+            type: 'POST',
+            url: '/compile',
+            data: {
+                code: $('textarea[name=code]').val()
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+
+                var type = data.type == 'error' ? 'invalid' : '';
+                $('textarea[name=output]').val(data.output).addClass(type);
+
+                $('button[name=submit]').removeAttr('disabled').text('RUN!');
+            },
+            error: function (xhr, type) {
+                alert('error from api')
+            }
+        });
+    })
+</script>
+</body>
+</html>
